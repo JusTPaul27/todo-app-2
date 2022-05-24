@@ -61,6 +61,19 @@ function removeTodoAndRefesh(todo) {
   displayTodos(todosArray);
 }
 
+
+function confirmDelete() {
+  const retVal = confirm('Vuoi davvero cancellare questo promemoria?')
+  if (retVal === true) {
+    alert('Il promemoria è stato cancellato correttamente!');
+    deleteTodo(todo.id);
+    return true;
+  } else{
+    alert('Il promemoria è non stato cancellato');
+    return false
+  }
+}
+
 function deleteTodo(id) {
   startLoading()
   const deleteUrl = BASE_URL + '/' + id;
@@ -69,6 +82,15 @@ function deleteTodo(id) {
     .then(response => response.json())
     .then(result => removeTodoAndRefesh(result))
     .catch(error => stopLoading())
+}
+
+
+function orderByPriority() {
+  toDoList.sort(compareByPriority);
+}
+
+function compareByPriority(todo1, todo2) {
+  return todo2.priority - todo1.priority;
 }
 
 function displayTodos(todos) {
@@ -91,11 +113,12 @@ function displayTodos(todos) {
 
 
     const deleteButton = todoCard.querySelector('.delete-button');
-    deleteButton.onclick = () => deleteTodo(todo.id);
+    deleteButton.onclick = () => confirmDelete();
 
 
     const divider = todoCard.querySelector('.divider');
     divider.style.backgroundColor = todo.priority.color;
+    
 
 
     // const span = document.createElement('span');
@@ -111,11 +134,14 @@ function displayTodos(todos) {
 
     // todoCard.appendChild(button);
 
+    
     todosContainer.appendChild(todoCard);
+    
 
   }
-
+  // orderByPriority();
 }
+
 
 function initTodos(todos) {
   stopLoading();
@@ -133,7 +159,4 @@ function loadTodos() {
 
 loadTodos()
 
-
-///confirm 
-////https://www.tutorialspoint.com/javascript/javascript_dialog_boxes.htm
 

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@600&family=Saira:ital,wght@1,300;1,400&display=swap');
+
 *{
   color: #414141;
   font-family: monospace;
@@ -24,12 +26,14 @@ body{
   align-items: center;
   padding: 8px;
   justify-content: space-between;
-  background-color: rgb(110, 152, 234);
+  background-color: rgb(50, 97, 183);
+
 }
 
 .app-title{
   font-size: x-large;
   color: bisque;
+  font-family: 'Mitr', sans-serif;
 }
 
 .todos-container{
@@ -58,15 +62,19 @@ button{
 }
 
 .todo-card{
+  box-shadow: 9px 7px 16px 2px rgba(0,0,0,0.66);
+  -webkit-box-shadow: 9px 7px 16px 2px rgba(0,0,0,0.66);
+  -moz-box-shadow: 9px 7px 16px 2px rgba(0,0,0,0.66);
   display: flex;
   flex-direction: column;
   padding: 16px;
   border-bottom: 2px solid;
   gap: 4px;
+  margin: 12px;
+  border-radius: 20px;
 }
 
 .divider{
-  background-color: #414141;
   width: 100%;
   height: 2px;
   border-radius: 1px;
@@ -75,11 +83,18 @@ button{
 .tag{
   border: 1px solid;
   padding:  4px;
-  border-radius: 20%;
+  border-radius: 24px;
+  border-color: #414141;
+  margin: 2px;
   background-color: rgb(0, 120, 120);
   color: bisque;
   box-sizing: border-box;
   font-size: small;
+}
+
+.tag:hover{
+  background-color: rgb(0, 87, 87);
+  cursor: pointer;
 }
 
 .todo-name{
@@ -90,4 +105,17 @@ button{
 .buttons-container{
   display: flex;
   justify-content: space-between;
+}
+
+
+@media screen and (min-width: 500px) {
+  .todos-container {
+      display: grid;
+      grid-template-columns:1fr 1fr 1fr ;
+  }
+
+  .todo-card{
+      height: fit-content;
+  }
+  
 }
