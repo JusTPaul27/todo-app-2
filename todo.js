@@ -1,7 +1,7 @@
 class Todo {
 
     static PRIORITY = {
-        low: { order: 0, name: 'Bassa', color: '#498467' },
+        low: { order: 0, name: 'Bassa', color: '#498467', },
         medium: { order: 1, name: 'Media', color: '#EFD780' },
         high: { order: 2, name: 'Alta', color: 'darkorange' },
         veryHigh: { order: 3, name: 'Molto Alta', color: 'red' },
