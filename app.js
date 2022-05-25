@@ -3,9 +3,22 @@ const BASE_URL = 'https://628b2f157886bbbb37b20caa.mockapi.io/todos'
 
 let todosArray = [];
 
-function goTodoPage() {
-  window.location.href = "./todo.html"
+function goTodoPage(id) {
+  let urlString = "./todo.html"
+  if (id) {
+   urlString = urlString + '?id=' + id;
+  }
+  window.location.href = urlString
 }
+
+// function goTodoPage2(todo) {
+//   let urlString = "./todo.html"
+//   if (todo) {
+//     const todoString = JSON.stringify(todo);
+//   sessionStorage.setItem('selectedTodo', todoString);
+//   }
+//   window.location.href = urlString
+// }
 
 function populateTagContainer(container, tags) {
   for (const tag of tags) {
@@ -62,36 +75,25 @@ function removeTodoAndRefesh(todo) {
 }
 
 
-function confirmDelete() {
-  const retVal = confirm('Vuoi davvero cancellare questo promemoria?')
-  if (retVal === true) {
-    alert('Il promemoria è stato cancellato correttamente!');
-    deleteTodo(todo.id);
-    return true;
-  } else{
-    alert('Il promemoria è non stato cancellato');
-    return false
-  }
-}
 
 function deleteTodo(id) {
-  startLoading()
-  const deleteUrl = BASE_URL + '/' + id;
-  const fetchOptions = { method: 'delete' };
-  fetch(deleteUrl, fetchOptions)
-    .then(response => response.json())
-    .then(result => removeTodoAndRefesh(result))
-    .catch(error => stopLoading())
+  if (confirm('Sei sicuro di voler cancellare? perderai definitivamente il promemoria')) {
+    alert('Il promemoria è stato cancellato correttamente')
+    startLoading()
+    const deleteUrl = BASE_URL + '/' + id;
+    const fetchOptions = { method: 'delete' };
+    fetch(deleteUrl, fetchOptions)
+      .then(response => response.json())
+      .then(result => removeTodoAndRefesh(result))
+      .catch(error => stopLoading())
+  } else {
+    alert('il promemoria non è stato cancellato')
+  }
+
 }
 
 
-function orderByPriority() {
-  toDoList.sort(compareByPriority);
-}
 
-function compareByPriority(todo1, todo2) {
-  return todo2.priority - todo1.priority;
-}
 
 function displayTodos(todos) {
 
@@ -113,7 +115,10 @@ function displayTodos(todos) {
 
 
     const deleteButton = todoCard.querySelector('.delete-button');
-    deleteButton.onclick = () => confirmDelete();
+    deleteButton.onclick = () => deleteTodo(todo.id);
+
+    const editButton = todoCard.querySelector('.edit-button');
+    editButton.onclick = () => goTodoPage(todo.id);
 
 
     const divider = todoCard.querySelector('.divider');
@@ -143,9 +148,12 @@ function displayTodos(todos) {
 }
 
 
+
+
 function initTodos(todos) {
   stopLoading();
   todosArray = todos.map(obj => Todo.fromDbObj(obj));
+  todosArray.sort(Todo.orderTodoByPriority)
   displayTodos(todosArray);
 }
 

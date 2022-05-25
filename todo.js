@@ -1,40 +1,36 @@
-class Todo {
+// function parseUrlParams() {
+//     const url = window.location.href;
+//     const urlArray = url.split('?');
+//     const paramsString = urlArray[1];
+//     if (paramsString) {
+//        const paramsArray = paramsString.split('&');
+//        const paramsObj = {};
+//        for (const str of paramsArray) {
+//            const strArray = str.split('=')
+//         paramsObj[strArray[0]] = decodeURIComponent(strArray[1]);
+//        }
+//         console.log('paramsObj', paramsObj)
+//     }else{
+//         return null;
+//     }
+// }
 
-    static PRIORITY = {
-        low: { order: 0, name: 'Bassa', color: '#498467', },
-        medium: { order: 1, name: 'Media', color: '#EFD780' },
-        high: { order: 2, name: 'Alta', color: 'darkorange' },
-        veryHigh: { order: 3, name: 'Molto Alta', color: 'red' },
-    }
-
-    constructor(creationDate = new Date(), name, tags = [], priority = Todo.PRIORITY.low) {
-        this._creationDate = creationDate.getTime();
-        this.name = name;
-        this.tags = tags;
-        this.priority = priority;
-    }
-
-
-    set creationDate(date) {
-        this._creationDate = date.getTime();
-    }
-
-
-    get creationDate() {
-        return new Date(this._creationDate);
-    }
-
-
-    static fromDbObj(obj) { 
-        const todo = new Todo(new Date(obj.creationDate * 1000), obj.name, obj.tags);
-        todo.id = obj.id;
-        if (obj.priority === 1) {
-            todo.priority = Todo.PRIORITY.medium;
-        } else if (obj.priority === 2) {
-            todo.priority = Todo.PRIORITY.high;
-        } else if (obj.priority === 3) {
-            todo.priority = Todo.PRIORITY.veryHigh;
-        }
-        return todo;
-    }
+function parseUrlParams() {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+    return params;
 }
+
+const params = parseUrlParams();
+
+console.log(params);
+
+// function getTodoFromSessionStorage() {
+//     const todoString = sessionStorage.getItem('selectedTodo');
+//     if (todoString) {
+//         const todo = JSON.parse(todoString);
+//         console.log('todo', todo);
+//     }
+// }
+
+// getTodoFromSessionStorage();
