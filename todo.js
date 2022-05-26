@@ -1,6 +1,6 @@
 const BASE_URL = 'https://628b2f157886bbbb37b20caa.mockapi.io/todos';
 
-let selectedTodo;
+let selectedTodo = new Todo('New todo');
 
 // function parseUrlParams(){
 //   const url = window.location.href;
@@ -25,35 +25,37 @@ let selectedTodo;
 //   }
 // }
 
-function goHome(){
+function goHome() {
     window.location.href = './'
-  }
-  
-  function parseUrlParams() {
+}
+
+function parseUrlParams() {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
     return params;
     //console.log('params', params);
-  }
+}
   
-  const params = parseUrlParams();
+const params = parseUrlParams();
+
+console.log(params);
+
+if (params.id) {
+    changeTitle();
+    loadSelectedTodo(params.id);
+} else {
+    fillForm(selectedTodo);
+}
+
+
+function changeTitle() {
+    const pageTitle = document.getElementById('page-title');
+    pageTitle.innerHTML = 'Modifica Todo';
+}
+
+
   
-  console.log(params);
-
-  if (params.id) {
-  changeTitle();
-  loadSelectedTodo(params.id);
-  }
-
-
-  function changeTitle() {
-          const pageTitle = document.getElementById('page-title');
-          pageTitle.innerHTML = 'Modifica Todo';
-  }
-
-
-  
-  function colorTags(selectedTags) {
+function colorTags(selectedTags) {
     const tags = document.getElementsByClassName('tag')
     for (const tagSpan of tags) {
         if (selectedTags.includes(tagSpan.innerHTML)) {
@@ -63,45 +65,86 @@ function goHome(){
         }
     }
 
-  }
+}
 
 
-  function colorPriority(priority) {
+function colorPriority(priority) {
     const priorities = document.getElementsByClassName('priority')
     for (const prioritySpan of priorities) {
         if (priority.name === prioritySpan.innerHTML) {
             prioritySpan.style.backgroundColor = priority.color;
-        }  else {
+        } else {
             prioritySpan.style.backgroundColor = 'rgb(0, 120, 120)'
         }
     }
 
-  }
+}
 
 
-  function addOrRemoveTag(tag){
+function addOrRemoveTag(tag) {
     if (selectedTodo.tags.includes(tag)) {
         selectedTodo.tags = selectedTodo.tags.filter(t => filterTags(t, tag));
     } else {
         selectedTodo.tags.push(tag);
     }
     colorTags(selectedTodo.tags)
-  }
+}
 
 
-  function filterTags(t1, t2) {
-      return t1 !== t2;
-  }
+function filterTags(t1, t2) {
+    return t1 !== t2;
+}
 
 
-  function changePriority(priority){
+function changePriority(priority) {
     selectedTodo.priorityOrder = priority;
     colorPriority(selectedTodo.priority);
-  }
+}
 
-  function fillForm(obj) {
-      const todo = Todo.fromDbObj(obj);
-      selectedTodo = todo;
+
+function saveTodo() {
+    const nameInput = document.getElementById('name-input');
+    const name = nameInput.value.trim();
+    let url;
+    let fetchOptions;
+
+    if (name) {
+        selectedTodo.name = name;
+        const dbObj = selectedTodo.toDbObj();
+        const dbObjJson = JSON.stringify(dbObj);
+
+        if (params.id) {
+
+            url = BASE_URL + '/' + params.id;
+
+            fetchOptions =
+            {
+                method: 'put', body: dbObjJson, headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+
+
+        } else {
+            url = BASE_URL
+            fetchOptions =
+            {
+                method: 'post', body: dbObjJson, headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+        }
+        fetch(url, fetchOptions)
+            .then(resp => resp.json())
+            .then(res => goHome())
+
+
+    } else {
+        alert('Non posso salvare un Todo anonimo');
+    }
+}
+
+  function fillForm(todo) {
       const nameInput = document.getElementById('name-input');
       nameInput.value = todo.name;
       colorTags(todo.tags);
@@ -113,7 +156,13 @@ function goHome(){
     const todoUrl = BASE_URL + '/' + id;
     fetch(todoUrl)
     .then(resp => resp.json())
-    .then(result => fillForm(result))
+    .then(result => initSelectedTodo(result));
+  }
+
+  function initSelectedTodo(obj) {
+    const todo = Todo.fromDbObj(obj);
+    selectedTodo = todo;
+    fillForm(selectedTodo);
   }
 
 
