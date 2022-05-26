@@ -79,7 +79,7 @@ button{
   border-radius: 1px;
 }
 
-.tag{
+.chip{
   border: 1px solid;
   padding:  4px;
   border-radius: 24px;
@@ -91,7 +91,7 @@ button{
   font-size: small;
 }
 
-.tag:hover{
+.chip:hover{
   background-color: rgb(0, 87, 87);
   cursor: pointer;
 }
@@ -107,6 +107,25 @@ button{
 }
 
 
+.todo-container{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.section-title{
+  font-size: large;
+}
+
+.save-button{
+  background-color: #414141;
+  color: white;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 8px
+}
+
 @media screen and (min-width: 500px) {
   .todos-container {
       display: grid;
@@ -118,3 +137,4 @@ button{
   }
   
 }
+

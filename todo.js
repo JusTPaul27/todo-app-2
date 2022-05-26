@@ -1,58 +1,132 @@
-// function parseUrlParams() {
-//     const url = window.location.href;
-//     const urlArray = url.split('?');
-//     const paramsString = urlArray[1];
-//     if (paramsString) {
-//        const paramsArray = paramsString.split('&');
-//        const paramsObj = {};
-//        for (const str of paramsArray) {
-//            const strArray = str.split('=')
-//         paramsObj[strArray[0]] = decodeURIComponent(strArray[1]);
-//        }
-//         console.log('paramsObj', paramsObj)
-//     }else{
-//         return null;
+const BASE_URL = 'https://628b2f157886bbbb37b20caa.mockapi.io/todos';
+
+let selectedTodo;
+
+// function parseUrlParams(){
+//   const url = window.location.href;
+//   console.log('URL', url);
+//   const urlArray = url.split('?');
+//   console.log('URLarray', urlArray);
+//   const paramsString = urlArray[1];
+//   console.log('secondo elemento di urlarray', paramsString);
+//   if (paramsString) {
+//     const paramsArray = paramsString.split('&');
+//     console.log('array dei parametri', paramsArray)
+//     const paramsObj = {};
+//     for (const str of paramsArray) {
+//       console.log('stringa parametro', str)
+//       const strArray = str.split('=')
+//       console.log('array del parametro', strArray)
+//       paramsObj[strArray[0]] = decodeURIComponent(strArray[1]) ;
 //     }
+//     console.log('paramsObj', paramsObj)
+//   } else {
+//     return null;
+//   }
 // }
 
-function parseUrlParams() {
+function goHome(){
+    window.location.href = './'
+  }
+  
+  function parseUrlParams() {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
     return params;
-}
+    //console.log('params', params);
+  }
+  
+  const params = parseUrlParams();
+  
+  console.log(params);
 
-const params = parseUrlParams();
+  if (params.id) {
+  changeTitle();
+  loadSelectedTodo(params.id);
+  }
 
-console.log(params);
 
-// function getTodoFromSessionStorage() {
-//     const todoString = sessionStorage.getItem('selectedTodo');
-//     if (todoString) {
-//         const todo = JSON.parse(todoString);
-//         console.log('todo', todo);
-//     }
-// }
+  function changeTitle() {
+          const pageTitle = document.getElementById('page-title');
+          pageTitle.innerHTML = 'Modifica Todo';
+  }
 
-// getTodoFromSessionStorage();
 
-function createEditTemplate(){
-    const editTemplate = `
-    <h2>nome</h2>
-   <input type="text" name="todo-name" id="todo-name">
-   <div>
-       <h2>Tags</h2>
-       <span class="tag">casa</span>
-       <span class="tag">hobby</span>
-       <span class="tag">spesa</span>
-       <span class="tag">fumetti</span>
-       <span class="tag">lavoro</span>
-   </div>
-       <div>
-           <h2>priorità</h2>
-           <span class="tag">bassa</span>
-           <span class="tag">media</span>
-           <span class="tag">alta</span>
-           <span class="tag">molto alta</span>
-       </div>`
+  
+  function colorTags(selectedTags) {
+    const tags = document.getElementsByClassName('tag')
+    for (const tagSpan of tags) {
+        if (selectedTags.includes(tagSpan.innerHTML)) {
+            tagSpan.style.backgroundColor = 'tomato';
+        } else {
+            tagSpan.style.backgroundColor = 'rgb(0, 120, 120)'
+        }
+    }
 
-}
+  }
+
+
+  function colorPriority(priority) {
+    const priorities = document.getElementsByClassName('priority')
+    for (const prioritySpan of priorities) {
+        if (priority.name === prioritySpan.innerHTML) {
+            prioritySpan.style.backgroundColor = priority.color;
+        }  else {
+            prioritySpan.style.backgroundColor = 'rgb(0, 120, 120)'
+        }
+    }
+
+  }
+
+
+  function addOrRemoveTag(tag){
+    if (selectedTodo.tags.includes(tag)) {
+        selectedTodo.tags = selectedTodo.tags.filter(t => filterTags(t, tag));
+    } else {
+        selectedTodo.tags.push(tag);
+    }
+    colorTags(selectedTodo.tags)
+  }
+
+
+  function filterTags(t1, t2) {
+      return t1 !== t2;
+  }
+
+
+  function changePriority(priority){
+    selectedTodo.priorityOrder = priority;
+    colorPriority(selectedTodo.priority);
+  }
+
+  function fillForm(obj) {
+      const todo = Todo.fromDbObj(obj);
+      selectedTodo = todo;
+      const nameInput = document.getElementById('name-input');
+      nameInput.value = todo.name;
+      colorTags(todo.tags);
+      colorPriority(todo.priority);
+  }
+
+
+  function loadSelectedTodo(id) {
+    const todoUrl = BASE_URL + '/' + id;
+    fetch(todoUrl)
+    .then(resp => resp.json())
+    .then(result => fillForm(result))
+  }
+
+
+
+
+  
+  // function getTodoFromSessionStorage(){
+  //   const todoString = sessionStorage.getItem('selectedTodo');
+  //   if (todoString) {
+  //     const todo = JSON.parse(todoString);
+  //     console.log('todo', todo)
+  //   }
+  // }
+  
+  
+  // getTodoFromSessionStorage()
