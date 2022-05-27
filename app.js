@@ -41,7 +41,7 @@ function createTodoCard(todo) {
 <div class="buttons-container">
   <button class="delete-button"><img width="24px" src="./assets/delete.svg" alt=""></button>
   <button class="edit-button"><img width="24px" src="./assets/edit.svg" alt=""></button>
-  <button class="check-button"><img width="24px" src="./assets/check.svg" alt=""></button>
+  <button class="done-button"><img width="24px" src="./assets/check.svg" alt=""></button>
 </div>
 `
   const todoHtml = cardTemplate.replace('#NAME', todo.name)
@@ -93,9 +93,33 @@ function deleteTodo(id) {
 }
 
 
+function todoDone(todo) {
+  todo.doneDate = new Date().getTime() / 1000;
+  todo.priority = Todo.PRIORITY.done;
+  const dbObj = todo.toDbObj();
+  const dbObjJson = JSON.stringify(dbObj);
+
+  const url = BASE_URL + '/' + todo.id;
+
+  fetchOptions =
+            {
+                method: 'put', body: dbObjJson, headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+  fetch(url, fetchOptions)
+  .then(resp => resp.json())
+  .then(res => displayTodos(todosArray))
+  
+}
+
+
 
 
 function displayTodos(todos) {
+
+  todosArray.sort(Todo.orderTodoByPriority)
 
   const todosContainer = document.getElementById('todos-container');
 
@@ -118,11 +142,26 @@ function displayTodos(todos) {
     deleteButton.onclick = () => deleteTodo(todo.id);
 
     const editButton = todoCard.querySelector('.edit-button');
-    editButton.onclick = () => goTodoPage(todo.id);
+    if (todo.doneDate) {
+      editButton.style.display = 'none'
+    } else {
+      editButton.onclick = () => goTodoPage(todo.id);
+    }
+
+
+    const doneButton = todoCard.querySelector('.done-button');
+    if (todo.doneDate) {
+      doneButton.style.display = 'none'
+    } else {
+      doneButton.onclick = () => todoDone(todo);
+
+    }
 
 
     const divider = todoCard.querySelector('.divider');
     divider.style.backgroundColor = todo.priority.color;
+    
+
     
 
 
@@ -153,7 +192,7 @@ function displayTodos(todos) {
 function initTodos(todos) {
   stopLoading();
   todosArray = todos.map(obj => Todo.fromDbObj(obj));
-  todosArray.sort(Todo.orderTodoByPriority)
+
   displayTodos(todosArray);
 }
 

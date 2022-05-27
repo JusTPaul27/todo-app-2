@@ -1,10 +1,12 @@
 class Todo {
 
     static PRIORITY = {
-        low: { order: 0, name: 'Bassa', color: 'green', },
+        done: { order: -1, name: 'Fatto', color: 'aquamarine' },
+        low: { order: 0, name: 'Bassa', color: 'green' },
         medium: { order: 1, name: 'Media', color: '#FAC748' },
         high: { order: 2, name: 'Alta', color: 'darkorange' },
         veryHigh: { order: 3, name: 'Molto alta', color: 'red' },
+        
     }
 
     constructor(name, creationDate = new Date(), tags = [], priority = Todo.PRIORITY.low) {
@@ -34,6 +36,8 @@ class Todo {
             this.priority = Todo.PRIORITY.high;
         } else if (order === 3) {
             this.priority = Todo.PRIORITY.veryHigh;
+        } else if (order === -1) {
+            this.priority = Todo.PRIORITY.done;
         }
     }
 
@@ -41,11 +45,17 @@ class Todo {
         const todo = new Todo( obj.name, new Date(obj.creationDate * 1000), obj.tags);
         todo.id = obj.id;
         todo.priorityOrder = obj.priority;
+        if (obj.doneDate) {
+            todo.doneDate = obj.doneDate;
+        }
         return todo;
     }
 
      toDbObj() { 
-        const obj = {name: this.name, tags: this.tags, priority: this.priority.order, creationDate: this._creationDate/1000 };
+        const obj = {name: this.name, tags: this.tags, priority: this.priority.order, creationDate: this._creationDate/1000};
+        if (this.doneDate) {
+            obj.doneDate = this.doneDate;
+        }
         return obj;
     }
 
